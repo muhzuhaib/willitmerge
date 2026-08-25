@@ -1,8 +1,8 @@
 # willitmerge
 
 [![CI](https://github.com/muhzuhaib/willitmerge/actions/workflows/ci.yml/badge.svg)](https://github.com/muhzuhaib/willitmerge/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/willitmerge.svg)](https://pypi.org/project/willitmerge/)
-[![Python](https://img.shields.io/pypi/pyversions/willitmerge.svg)](https://pypi.org/project/willitmerge/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **Before you spend a weekend on a pull request, check whether that repository has ever merged a stranger's.**
 
@@ -33,10 +33,13 @@ front pages.
 ## Install
 
 ```console
-pip install willitmerge
+pip install git+https://github.com/muhzuhaib/willitmerge
 ```
 
 No runtime dependencies. Python 3.10 or newer.
+
+The PyPI release is set up but not yet published, so `pip install willitmerge`
+does not work today. Installing from the tag above gives exactly the same code.
 
 ## Use
 
