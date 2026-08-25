@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest supported and newest released. The middle versions rarely
+        # break independently and cost minutes for no signal.
+        python-version: ["3.10", "3.13"]
+        os: [ubuntu-latest]
+        include:
+          # This is a command line tool, and the certificate handling and the
+          # subprocess call that finds a gh token both behave differently on
+          # Windows. One Windows job is the cheapest way to keep that honest.
+          - python-version: "3.13"
+            os: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Test
+        run: pytest -q
+
+  install:
+    # Verifies the way a stranger gets it: build the wheel, install it into a
+    # clean environment with nothing else present, and run the command. A test
+    # suite that runs from the source tree would not notice a packaging
+    # mistake that leaves a module out of the wheel.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Build the wheel
+        run: |
+          pip install build
+          python -m build --wheel
+
+      - name: Install it somewhere clean and run it
+        run: |
+          python -m venv /tmp/clean
+          /tmp/clean/bin/pip install --quiet dist/*.whl
+          /tmp/clean/bin/willitmerge --version
+          /tmp/clean/bin/willitmerge --help
+
+      - name: Query a real repository
+        # The one job that talks to GitHub. It proves the client, the token
+        # discovery and the table all work against the live API, which no
+        # fixture can. GITHUB_TOKEN is the automatic per run token.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          /tmp/clean/bin/willitmerge pallets/flask --days 90 --json | tee out.json
+          python -c "
+          import json, sys
+          data = json.load(open('out.json'))
+          assert not data['errors'], data['errors']
+          row = data['results'][0]
+          assert row['repo'] == 'pallets/flask'
+          assert row['pulls_seen'] > 0, row
+          print('live query returned', row['pulls_seen'], 'pull requests')
+          "
