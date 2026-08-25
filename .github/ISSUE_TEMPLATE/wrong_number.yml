@@ -1,0 +1,48 @@
+name: A number looks wrong
+description: The counts or the verdict do not match what you see on GitHub
+labels: ["accuracy"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        This is the most useful kind of report this project can get. The tool
+        makes a claim about a real repository, so a claim that does not hold up
+        is a defect even when nothing crashed.
+
+  - type: input
+    id: repo
+    attributes:
+      label: Repository
+      placeholder: pallets/flask
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: What willitmerge printed
+      description: Please paste the `--json` output, which carries the raw counts.
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: contradiction
+    attributes:
+      label: What you saw on GitHub that disagrees
+      description: >
+        A link to the pull request list with the filter you used is ideal, for
+        example a search that returns a count this tool did not.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: known
+    attributes:
+      label: Known limitations
+      description: >
+        The README lists four. Please confirm the disagreement is not one of
+        them before opening this.
+      options:
+        - label: I have read the Limitations section of the README
+          required: true

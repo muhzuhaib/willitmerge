@@ -1,0 +1,26 @@
+name: Feature request
+description: Something the tool should measure or report and does not
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What decision would this help you make
+      description: >
+        This tool exists to answer one question before somebody spends a
+        weekend on a patch. Describing the decision rather than the feature
+        makes it much easier to tell whether it belongs here.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do today instead

@@ -1,0 +1,44 @@
+name: Bug report
+description: Something the tool got wrong, or a crash
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The exact command you ran and what it printed.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: input
+    id: repo
+    attributes:
+      label: Which repository were you asking about
+      description: >
+        If the numbers look wrong for a specific repository, naming it makes
+        the report reproducible. Its pull request history is public.
+      placeholder: pallets/flask
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `willitmerge --version`
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python and operating system
+      placeholder: "3.13 on Windows 11"
+    validations:
+      required: true
