@@ -4,7 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "willitmerge"
-version = "0.1.0"
+# The version has exactly one home, in the package itself. The release
+# workflow checks the git tag against that same constant, so a tag, a
+# wheel and `willitmerge --version` cannot disagree with each other.
+dynamic = ["version"]
 description = "Check whether a GitHub repository actually merges pull requests from people outside the team"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -25,6 +28,9 @@ classifiers = [
 # answer one question, and every dependency is a reason for that install to
 # fail on someone's machine. certifi is used if it is already present.
 dependencies = []
+
+[tool.hatch.version]
+path = "src/willitmerge/__init__.py"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

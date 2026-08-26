@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-08-26
+
+Documentation and packaging only. No change to what the tool does.
+
+### Fixed
+
+- The description published with 0.1.0 still told readers that the package was
+  not on PyPI yet and to install it from a git URL, which was written before
+  the first upload and was wrong the moment that upload happened. A release
+  description cannot be replaced on PyPI, so correcting it takes a release.
+- The version was declared in both `pyproject.toml` and the package, while the
+  release workflow only checked the package against the git tag. A bump that
+  touched one and not the other would have built a wheel whose version
+  disagreed with its tag and passed the check anyway. The build now reads the
+  version from the package, so there is one source for it.
+
 ## [0.1.0] - 2026-08-25
 
 First release.
@@ -29,4 +45,5 @@ outsider in ten within an hour over one that merges nine in ten within a week.
 The rewrite makes the merge rate the headline and reads the latency underneath
 it. Everything else here follows from that correction.
 
+[0.1.1]: https://github.com/muhzuhaib/willitmerge/releases/tag/v0.1.1
 [0.1.0]: https://github.com/muhzuhaib/willitmerge/releases/tag/v0.1.0

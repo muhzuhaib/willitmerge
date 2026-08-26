@@ -39,9 +39,6 @@ pip install willitmerge
 
 No runtime dependencies. Python 3.10 or newer.
 
-The PyPI release is set up but not yet published, so `pip install willitmerge`
-does not work today. Installing from the tag above gives exactly the same code.
-
 ## Use
 
 ```console
