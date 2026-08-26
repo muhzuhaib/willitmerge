@@ -1,6 +1,7 @@
 # willitmerge
 
 [![CI](https://github.com/muhzuhaib/willitmerge/actions/workflows/ci.yml/badge.svg)](https://github.com/muhzuhaib/willitmerge/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/willitmerge.svg)](https://pypi.org/project/willitmerge/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -33,7 +34,7 @@ front pages.
 ## Install
 
 ```console
-pip install git+https://github.com/muhzuhaib/willitmerge
+pip install willitmerge
 ```
 
 No runtime dependencies. Python 3.10 or newer.
