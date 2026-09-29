@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from willitmerge import cli
+from willitmerge import cli, github
 from willitmerge.github import Client, NotFound, RateLimited
 
 from conftest import NOW, pull
@@ -69,6 +69,38 @@ def test_one_bad_repository_does_not_lose_the_others(monkeypatch, capsys):
     assert "o/r" in out.out
     assert "o/gone" in out.err
     assert "not found" in out.err
+
+
+def test_a_timeout_on_one_repository_does_not_lose_the_others(monkeypatch, capsys):
+    # Goes through the real network layer: a read that stalls must come out as
+    # a per-repository error, not a traceback that discards every result.
+    good = json.dumps([pull(i, merged_after_h=6) for i in range(8)]).encode()
+
+    class Reply:
+        def __init__(self, url):
+            self.url = url
+            self.headers = {}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def read(self, *args):
+            if "/repos/o/slow/" in self.url:
+                raise TimeoutError("The read operation timed out")
+            return good if "&page=1" in self.url else b"[]"
+
+    monkeypatch.setattr(github.urllib.request, "urlopen", lambda request, **k: Reply(request.full_url))
+    monkeypatch.setattr(cli, "cutoff_for", lambda days: NOW.replace(year=2020))
+
+    assert cli.main(["o/r", "o/slow"]) == 0
+    out = capsys.readouterr()
+
+    assert "o/r" in out.out
+    assert "o/slow" in out.err
+    assert "timed out" in out.err
 
 
 def test_a_rate_limit_is_reported_and_exits_nonzero(monkeypatch, capsys):

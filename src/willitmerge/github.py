@@ -7,6 +7,7 @@ stop paginating and what to say when the rate limit runs out.
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import ssl
@@ -135,6 +136,12 @@ class Client:
             raise GitHubError(f"GitHub returned HTTP {err.code}") from None
         except urllib.error.URLError as err:
             raise GitHubError(f"could not reach GitHub: {err.reason}") from None
+        except (OSError, http.client.HTTPException) as err:
+            # The body is read after urlopen returns, so a stall or a dropped
+            # connection mid-reply arrives as a bare OSError, not a URLError.
+            raise GitHubError(f"could not read the reply from GitHub: {err}") from None
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            raise GitHubError("GitHub sent a reply that is not JSON") from None
 
     def get(self, path: str) -> Any:
         payload, _ = self._opener(path)

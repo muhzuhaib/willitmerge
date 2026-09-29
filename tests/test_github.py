@@ -130,6 +130,54 @@ def test_a_missing_repository_is_a_clear_error(monkeypatch):
         client.get("/repos/o/nope")
 
 
+class _Reply:
+    """What urlopen hands back: a context manager whose body is read later."""
+
+    def __init__(self, read):
+        self._read = read
+        self.headers = {}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def read(self, *args):
+        return self._read()
+
+
+def _stalls():
+    raise TimeoutError("The read operation timed out")
+
+
+def _drops():
+    raise ConnectionResetError(10054, "An existing connection was forcibly closed")
+
+
+@pytest.mark.parametrize("read", [_stalls, _drops], ids=["read-timeout", "connection-reset"])
+def test_a_failure_while_reading_the_reply_is_a_github_error(monkeypatch, read):
+    # The connect is covered by URLError, but the body is read afterwards and a
+    # stall or a dropped connection there raises a bare OSError instead.
+    monkeypatch.setattr(github.urllib.request, "urlopen", lambda *a, **k: _Reply(read))
+
+    with pytest.raises(GitHubError) as caught:
+        Client(token="t").get("/repos/o/r/pulls")
+
+    assert "could not read" in str(caught.value)
+
+
+def test_a_reply_that_is_not_json_is_a_github_error(monkeypatch):
+    # A proxy or a GitHub outage page can answer 200 with HTML.
+    page = b"<html><body>Unicorn!</body></html>"
+    monkeypatch.setattr(github.urllib.request, "urlopen", lambda *a, **k: _Reply(lambda: page))
+
+    with pytest.raises(GitHubError) as caught:
+        Client(token="t").get("/repos/o/r/pulls")
+
+    assert "not JSON" in str(caught.value)
+
+
 def test_a_rate_limit_with_no_reset_header_still_reports_something():
     assert "rate limit" in str(RateLimited(None)).lower()
 

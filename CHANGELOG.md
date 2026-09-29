@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
 [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- A reply that stalls or drops partway through, or a 200 reply that is not
+  JSON (an HTML page from a proxy, for example), is now reported against the
+  repository it came from. Every other repository in the same run still gets
+  its row, as it already did for a renamed or private repository.
+
 ## [0.1.1] - 2026-08-26
 
 Documentation and packaging only. No change to what the tool does.
